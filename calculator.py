@@ -1,62 +1,44 @@
+# calculator.py - Protein Charge Calculation Logic
+
 PKA_VALUES = {
-    'N_term': 8.0,
-    'C_term': 3.1,
     'D': 3.9,
-    'E': 4.1,
+    'E': 4.3,
     'H': 6.0,
-    'C': 8.5,
+    'C': 8.3,
     'Y': 10.1,
     'K': 10.5,
     'R': 12.5
 }
-def calculate_residue_charge(residue, position, length, ph):
-  res = residue.upper()
-  charge = 0.0
 
-    if position == 0:
-        pka = PKA_VALUES['N_term']
-        charge = charge + (1.0 / (1.0 + 10 ** (ph - pka)))
-
-    if position == length - 1:
-        pka = PKA_VALUES['C_term']
-        charge = charge - (1.0 / (1.0 + 10 ** (pka - ph)))
-
-    if res == 'K' or res == 'R':
-        pka = PKA_VALUES[res]
-        charge = charge + (1.0 / (1.0 + 10 ** (ph - pka)))
-    elif res == 'H':
-        pka = PKA_VALUES['H']
-        charge = charge + (1.0 / (1.0 + 10 ** (ph - pka)))
-
-    elif res == 'D' or res == 'E':
-        pka = PKA_VALUES[res]
-        charge = charge - (1.0 / (1.0 + 10 ** (pka - ph)))
-    elif res == 'C' or res == 'Y':
-        pka = PKA_VALUES[res]
-        charge = charge - (1.0 / (1.0 + 10 ** (pka - ph)))
-        
+def compute_amino_acid_charge(aa, ph):
+    aa = aa.upper()
+    charge = 0.0
+    if aa in ['K', 'R']:
+        charge = 1.0 / (1.0 + 10.0**(ph - PKA_VALUES[aa]))
+    elif aa == 'H':
+        charge = 1.0 / (1.0 + 10.0**(ph - PKA_VALUES[aa]))
+    elif aa in ['D', 'E']:
+        charge = -1.0 / (1.0 + 10.0**(PKA_VALUES[aa] - ph))
+    elif aa in ['C', 'Y']:
+        charge = -1.0 / (1.0 + 10.0**(PKA_VALUES[aa] - ph))
     return charge
 
-
-
-def sliding_window_charge(sequence, window_size=11, ph=7.4):
-    length = len(sequence)
-    individual_charges = []
-    
-    for i in range(length):
-        res = sequence[i]
-        chg = calculate_residue_charge(res, i, length, ph)
-        individual_charges.append(chg)
-        
-    half_window = window_size // 2
+def compute_charge_profile(sequence, window_size=11, ph=7.4):
+    sequence = sequence.upper()
+    positions = []
     profile = []
+    half_window = window_size // 2
     
-    for i in range(length):
+    for i in range(len(sequence)):
         start = max(0, i - half_window)
-        end = min(length, i + half_window + 1)
-        window_slice = individual_charges[start:end]
-        total_window_charge = sum(window_slice)
-        profile.append(total_window_charge)
+        end = min(len(sequence), i + half_window + 1)
+        window_seq = sequence[start:end]
         
-    positions = np.arange(1, length + 1)
+        total_charge = 0.0
+        for aa in window_seq:
+            total_charge += compute_amino_acid_charge(aa, ph)
+            
+        positions.append(i + 1)
+        profile.append(total_charge)
+        
     return positions, profile
