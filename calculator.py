@@ -1,5 +1,3 @@
-# calculator.py - Protein Charge Calculation Logic
-
 PKA_VALUES = {
     'D': 3.9,
     'E': 4.3,
