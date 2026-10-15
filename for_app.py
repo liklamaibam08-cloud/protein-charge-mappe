@@ -3,16 +3,20 @@ import matplotlib.pyplot as plt
 from calculator import compute_charge_profile
 
 st.title("Protein Charge Distribution Mapper")
-st.write("Calculation and Visualization of a Protein Charge Sequnece:")
+st.write("Calculation and Visualization of a Protein Charge Sequence:")
+
 st.header("Step 1: Enter the protein sequence")
 uploaded_file = st.file_uploader("Upload a FASTA file (.txt or .fasta)")
+
+typed_text = st.text_area("Or type/paste your sequence here:", value="MEEPQSDPSVEPPLSQETFSDLWKLLPENNVLSPLPSQAMDDLMLSPDDIEQWFTEDPGP")
+
 protein_sequence = ""
 
 if uploaded_file is not None:
     file_bytes = uploaded_file.read()
     file_text = file_bytes.decode("utf-8")
-
-lines = file_text.split("\n")
+    
+    lines = file_text.split("\n")
     clean_text = ""
     
     for line in lines:
@@ -33,7 +37,7 @@ preset_window = 11
 st.header("Adjust the pH")
 chosen_ph = st.slider("Select pH Level", 1.0, 14.0, 7.4)
 
-st.header("Generating the Charge Map")
+st.header("Step 2: Generate the Graph")
 
 if st.button("Generate Charge Map"):
     if protein_sequence == "":
