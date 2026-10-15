@@ -1,3 +1,4 @@
+# app.py - Protein Charge Distribution Website
 import streamlit as st
 import matplotlib.pyplot as plt
 from calculator import compute_charge_profile
