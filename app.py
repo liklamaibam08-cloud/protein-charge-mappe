@@ -39,18 +39,14 @@ if st.button("Generate Charge Map"):
         st.warning("Please enter a protein sequence or upload a file first!")
     else:
         positions, profile = compute_charge_profile(protein_sequence, window_size=preset_window, ph=chosen_ph, include_termini=include_termini)
-        
         fig, ax = plt.subplots(figsize=(10, 4))
         ax.plot(positions, profile, color="blue", linewidth=2)
         ax.axhline(0, color="gray", linestyle="--")
-        
         ax.set_title(f"Protein Charge Distribution Profile (pH = {chosen_ph})")
         ax.set_xlabel("Amino Acid Position")
         ax.set_ylabel("Net Charge")
-        
         st.pyplot(fig)
-
         tmp_path = os.path.join(tempfile.gettempdir(), "charge_profile.csv")
-        export_to_csv(positions, profile, tmp_path, sequence=protein_sequence)
+        export_to_csv(positions, profile, protein_sequence, tmp_path)
         with open(tmp_path, "rb") as f:
             st.download_button("Download CSV", f.read(), file_name="charge_profile.csv", mime="text/csv")
