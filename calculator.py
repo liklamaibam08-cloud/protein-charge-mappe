@@ -12,7 +12,6 @@ N_TERM_PKA = 9.0
 C_TERM_PKA = 3.1
 
 def compute_terminal_charges(ph):
-    """Return (n_term_charge, c_term_charge) at the given pH."""
     n_charge = 1.0 / (1.0 + 10.0**(ph - N_TERM_PKA))
     c_charge = -1.0 / (1.0 + 10.0**(C_TERM_PKA - ph))
     return n_charge, c_charge
@@ -32,12 +31,10 @@ def compute_charge_profile(sequence, window_size=11, ph=7.4, include_termini=Fal
     positions = []
     profile = []
     half_window = window_size // 2
-    
     for i in range(len(sequence)):
         start = max(0, i - half_window)
         end = min(len(sequence), i + half_window + 1)
         window_seq = sequence[start:end]
-        
         total_charge = 0.0
         for aa in window_seq:
             total_charge += compute_amino_acid_charge(aa, ph)
@@ -45,8 +42,6 @@ def compute_charge_profile(sequence, window_size=11, ph=7.4, include_termini=Fal
             total_charge += n_charge
         if end == len(sequence):
             total_charge += c_charge
-            
         positions.append(i + 1)
         profile.append(total_charge)
-        
     return positions, profile
