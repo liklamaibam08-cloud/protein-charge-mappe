@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 import tempfile
 from calculator import compute_charge_profile
-from fasta_parsing_and_code_runnig import parse_fasta_text
+from fasta_parsing_and_code_running import parse_fasta_text
 from exporter import export_to_csv
 
 st.title("Protein Charge Distribution Mapper")
