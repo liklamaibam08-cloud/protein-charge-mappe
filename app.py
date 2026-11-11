@@ -22,7 +22,7 @@ if len(records) > 0:
     chosen_protein = st.selectbox("Protein to analyse", list(records.keys()))
     protein_sequence = records[chosen_protein]
 
-preset_window = 11
+window_size = 11
 st.header("Adjust the pH")
 chosen_ph = st.slider("Select pH Level", 1.0, 14.0, 7.4)
 
@@ -32,7 +32,7 @@ if st.button("Generate Charge Map"):
     if protein_sequence == "":
         st.warning("Please enter a protein sequence or upload a file first!")
     else:
-        positions, profile = compute_charge_profile(sequence, window_size=window_size, ph=ph)
+        positions, profile = compute_charge_profile(protein_sequence, window_size=window_size, ph=chosen_ph)
         fig, ax = plt.subplots(figsize=(10, 4))
         ax.plot(positions, profile, color="blue", linewidth=2)
         ax.axhline(0, color="gray", linestyle="--")
