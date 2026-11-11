@@ -1,17 +1,13 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-import os
-import tempfile
 from calculator import compute_charge_profile
 from fasta_parsing_and_code_running import parse_fasta_text
-from exporter import export_to_csv
 
 st.title("Protein Charge Distribution Mapper")
 st.write("Calculation and Visualization of a Protein Charge Sequence:")
 
 st.header("Step 1: Enter the protein sequence")
 uploaded_file = st.file_uploader("Upload a FASTA file (.txt or .fasta)")
-
 typed_text = st.text_area("Or type/paste your sequence here:", value="MEEPQSDPSVEPPLSQETFSDLWKLLPENNVLSPLPSQAMDDLMLSPDDIEQWFTEDPGP")
 
 if uploaded_file is not None:
@@ -46,7 +42,3 @@ if st.button("Generate Charge Map"):
         ax.set_xlabel("Amino Acid Position")
         ax.set_ylabel("Net Charge")
         st.pyplot(fig)
-        tmp_path = os.path.join(tempfile.gettempdir(), "charge_profile.csv")
-        export_to_csv(positions, profile, protein_sequence, tmp_path)
-        with open(tmp_path, "rb") as f:
-            st.download_button("Download CSV", f.read(), file_name="charge_profile.csv", mime="text/csv")
