@@ -5,9 +5,9 @@ def parse_fasta_text(text):
         line = line.strip()
         if line == "":
             continue
-        if line.startswith(">"):
+       if line.startswith(">"):
             words = line[1:].split()
-            current_id = words[0] if len(words) > 0 else "sequence"
+            current_id = words[0] if words else "sequence"
             sequences[current_id] = ""
         else:
             if current_id is None:
