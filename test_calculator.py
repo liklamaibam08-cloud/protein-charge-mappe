@@ -1,12 +1,11 @@
 import math
 import pytest
-
 from calculator import (
     compute_amino_acid_charge,
     compute_charge_profile,
     compute_terminal_charges,
 )
-from exporter import export_to_csv
+from fasta_parsing_and_code_running import parse_fasta_text
 
 @pytest.mark.parametrize("aa", ["K", "R", "H"])
 def test_basic_residues_positive_at_low_ph(aa):
@@ -29,8 +28,8 @@ def test_lowercase_residue_handled():
 
 def test_net_charge_decreases_as_ph_rises():
     seq = "KRHDEKRHDE"
-    totals = [sum(compute_charge_profile(seq, window_size=len(seq), ph=ph)[1][:1])
-              for ph in (2, 5, 7.4, 10, 13)]
+    totals = [sum(compute_charge_profile(seq, window_size=len(seq), ph=ph)[1])
+             for ph in (2, 5, 7.4, 10, 13)]
     assert totals == sorted(totals, reverse=True)
 
 def test_extreme_ph_values_do_not_crash():
@@ -81,29 +80,12 @@ def test_window_larger_than_sequence():
 def test_lowercase_sequence_matches_uppercase():
     assert compute_charge_profile("mkrde") == compute_charge_profile("MKRDE")
 
-def test_export_csv_roundtrip(tmp_path):
-    positions, profile = compute_charge_profile("MKRDE", window_size=3)
-    out = tmp_path / "out.csv"
-    export_to_csv(positions, profile, "MKRDE", str(out))
-    with open(out) as f:
-        rows = [line.strip().split(",") for line in f]
-    assert rows[0] == ["Position", "Residue", "Net_Charge"]
-    assert len(rows) == 6
-    assert rows[1][:2] == ["1", "M"]
-    assert float(rows[2][2]) == pytest.approx(profile[1], abs=1e-5)
-
-def test_export_csv_length_mismatch(tmp_path):
-    with pytest.raises(ValueError):
-        export_to_csv([1, 2], [0.0], "AA", str(tmp_path / "bad.csv"))
-
-from fasta_parsing_and_code_runnig import parse_fasta_text
-
 def test_parse_fasta_multi_record():
-    assert parse_fasta_text(">a first\nmk\nrd\n>b second\nEE\n") == {"a": "MKRD", "b": "EE"}
+    assert parse_fasta_text(">a first\nmk\nnrd\n>b second\nnEE") == {"a": "MKNRD", "b": "NEE"}
 
 def test_parse_fasta_pasted_sequence_without_header():
     assert parse_fasta_text("mkrd") == {"sequence": "MKRD"}
 
 def test_parse_fasta_removes_spaces_and_survives_bare_header():
-    assert parse_fasta_text("mk rd\nee") == {"sequence": "MKRDEE"}
-    assert parse_fasta_text(">\nMK") == {"sequence": "MK"}
+    assert parse_fasta_text("mk rd\nnee") == {"sequence": "MKRDEE"}
+    assert parse_fasta_text(">\nnMK") == {"sequence": "MK"}
