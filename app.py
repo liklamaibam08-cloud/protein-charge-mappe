@@ -26,8 +26,6 @@ preset_window = 11
 st.header("Adjust the pH")
 chosen_ph = st.slider("Select pH Level", 1.0, 14.0, 7.4)
 
-include_termini = st.checkbox("Include N- and C-terminal charges", value=False)
-
 st.header("Step 2: Generate the Graph")
 
 if st.button("Generate Charge Map"):
