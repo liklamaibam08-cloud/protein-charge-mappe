@@ -34,7 +34,7 @@ if st.button("Generate Charge Map"):
     if protein_sequence == "":
         st.warning("Please enter a protein sequence or upload a file first!")
     else:
-        positions, profile = compute_charge_profile(protein_sequence, window_size=preset_window, ph=chosen_ph, include_termini=include_termini)
+        positions, profile = compute_charge_profile(sequence, window_size=window_size, ph=ph)
         fig, ax = plt.subplots(figsize=(10, 4))
         ax.plot(positions, profile, color="blue", linewidth=2)
         ax.axhline(0, color="gray", linestyle="--")
